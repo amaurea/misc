@@ -19,11 +19,6 @@ n = np.random.standard_normal(ext)*N**0.5
 
 d = (s+n)*M
 
-matshow(s)
-matshow(n)
-matshow(d)
-show()
-
 # Mark mask as totally uncertain
 N /= M
 
@@ -31,8 +26,8 @@ N /= M
 def A(x): return x/N + np.real(np.fft.ifft2(np.fft.fft2(x)/S,ext))
 def Ap(x): return np.real(np.fft.ifft2(np.fft.fft2(x)*S,ext))
 def dot(a,b): return np.sum(a*np.conj(b))
-u = np.random.standard_normal(ext)*0
-v = np.random.standard_normal(ext)*0
+u = np.random.standard_normal(ext)
+v = np.random.standard_normal(ext)
 b = d/N + u/N**0.5 + np.real(np.fft.ifft2(np.fft.fft2(v)/S**0.5,ext))
 
 cg = CG(A, b, x0=d, M=Ap, dot=dot)
