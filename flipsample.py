@@ -1,9 +1,11 @@
 # Flipper version of cmbsample. Needs this to use actual physical units
 import numpy as np, scipy.interpolate, argparse, time
 import flipper, flipperPol, fortran
-from pyfftw.interfaces import numpy_fft
+import pyfftw.interfaces.numpy_fft
 from matplotlib.pylab import *
 from enutil.cg import CG
+fft = pyfftw.interfaces.numpy_fft
+#fft = np.fft
 
 def makegrid(dims):
 	res = np.empty([len(dims)]+[len(d) for d in dims])
@@ -40,18 +42,18 @@ class Flatsky:
 		self.patch = patch
 		self.ncomp = ncomp
 		self.x     = makegrid([np.arange(patch.Ny)*patch.pixScaleY,np.arange(patch.Nx)*patch.pixScaleX])
-		self.l     = makegrid([np.fft.fftfreq(patch.Ny,d=patch.pixScaleY)*2*np.pi,np.fft.fftfreq(patch.Nx,d=patch.pixScaleX)*2*np.pi])
+		self.l     = makegrid([fft.fftfreq(patch.Ny,d=patch.pixScaleY)*2*np.pi,fft.fftfreq(patch.Nx,d=patch.pixScaleX)*2*np.pi])
 		self.absl  = np.sum(self.l**2,0)**0.5
 		self.angl  = np.arctan2(self.l[1],self.l[0])
 		self.shape = np.array(self.x.shape[1:])
 	def fft(self, a):
 		t1 = time.time()
-		res = numpy_fft.fft2(a, axes=[-2,-1])
+		res = fft.fft2(a, axes=[-2,-1])
 		print "fft", time.time()-t1
 		return res
 	def ifft(self, fa):
 		t1 = time.time()
-		res = np.real(numpy_fft.ifft2(fa, self.shape, axes=[-2,-1]))
+		res = np.real(fft.ifft2(fa, self.shape, axes=[-2,-1]))
 		print "ifft", time.time()-t1
 		return res
 	def rand(self):
